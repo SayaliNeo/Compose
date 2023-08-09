@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">NeoSpaceCompose</string>
+    <string name="neostore">NeoStore</string>
+    <string name="product_price">\u20B9</string>
+</resources>
