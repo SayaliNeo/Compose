@@ -78,12 +78,17 @@ fun CardLayout(productViewModel: ProductViewModel) {
         elevation = 10.dp, shape = RoundedCornerShape(10.dp)) {
 
         if (productViewModel.errorMessage.isEmpty()) {
+            Toast.makeText(
+                context,
+                "Products : ${productViewModel.prodList.size}",
+                Toast.LENGTH_LONG
+            ).show()
             LazyColumn(modifier = Modifier.fillMaxHeight()){
                 items(productViewModel.prodList) { list ->
                     Column {
                         Row {
                             Image(
-                                painter = rememberGlidePainter(request = list.products[0].thumbnail),
+                                painter = rememberGlidePainter(request = list.thumbnail),
                                 contentDescription = "Product Image",
                                 contentScale = ContentScale.Crop, modifier = Modifier
                                     .size(120.dp)
