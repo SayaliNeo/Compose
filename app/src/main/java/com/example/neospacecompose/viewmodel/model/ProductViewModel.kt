@@ -1,7 +1,6 @@
 package com.example.neospacecompose.viewmodel.model
 
 import android.util.Log
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -16,20 +15,20 @@ import kotlinx.coroutines.launch
 import retrofit2.Call
 
 class ProductViewModel : ViewModel() {
-//    private val productList : List<ProductData> by mutableStateOf(emptyList())
+    private val productList = ArrayList<ProductData>()
     var errorMessage: String by mutableStateOf("")
 
-    val prodList= mutableStateListOf<Products>()
+    val prodList: ArrayList<ProductData>
+        get() = productList
 
     fun allProductList() {
         viewModelScope.launch {
             val apiService = APIService.getInstance()
 
             try {
-                prodList.clear()
-                val data  = apiService.getProductList()
-                prodList.addAll(data.products)
-                Log.d("api","${data.products.size}")
+                productList.clear()
+                productList.add(apiService.getProductList())
+
             } catch (e: Exception) {
                 errorMessage = e.message.toString()
             }
