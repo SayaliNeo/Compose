@@ -11,14 +11,15 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import com.example.neospacecompose.presentation.navigation.MovieScreens
 
 sealed class DrawerScreenItems(
-    val id:String,
+    val route:String,
     val title: String,
-    val icons: ImageVector
+    val icons: ImageVector?=null
 ){
 object Home: DrawerScreenItems("Home","Home", Icons.Filled.Home)
 object Products: DrawerScreenItems("Products","Products", Icons.Rounded.ShoppingCart)
 object MyAccount: DrawerScreenItems("Account","My Account", Icons.Filled.Person)
 object Logout: DrawerScreenItems("Logout","Logout", Icons.Filled.ArrowBack)
+object DetailsViewScreen: DrawerScreenItems("ProductViewById/{title}","ViewProduct")
 }
 
 /*

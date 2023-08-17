@@ -1,8 +1,8 @@
 package com.example.neospacecompose.presentation
 
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -21,7 +21,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -30,40 +29,36 @@ import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.example.neospacecompose.R
 import com.example.neospacecompose.repository.drawRating
+import com.example.neospacecompose.ui.theme.CardBackground
 import com.example.neospacecompose.ui.theme.Purple91
+import com.example.neospacecompose.viewmodel.model.DrawerScreenItems
 import com.example.neospacecompose.viewmodel.model.ProductViewModel
 import com.google.accompanist.glide.rememberGlidePainter
 
 @Composable
-fun ProductDetailsScreen() {
-    val ctx = LocalContext.current
-    Log.d("Route","Product Screen")
+fun ProductDetailsScreen(navController: NavHostController) {
     val productViewModel = ProductViewModel()
-    Toast.makeText(ctx,"Product",Toast.LENGTH_SHORT).show()
-
-    CardLayout(productViewModel)
-
-
-}
-
-@Preview
-@Composable
-fun productPreview() {
-    ProductDetailsScreen()
-
-}
-
-@Composable
-fun CardLayout(productViewModel: ProductViewModel) {
-    LaunchedEffect(Unit, block = {
+    LaunchedEffect("key1", block = {
         productViewModel.allProductList()
     })
+
+    CardLayout(productViewModel=productViewModel){title->
+        navController.navigate(DrawerScreenItems.DetailsViewScreen.route)
+    }
+}
+
+
+@Composable
+fun CardLayout(productViewModel: ProductViewModel,onProductItemClick : (String)->Unit) {
+
+    //val navController = rememberNavController()
     val context = LocalContext.current
     val paddingModifier = Modifier
         .padding(5.dp)
@@ -73,68 +68,95 @@ fun CardLayout(productViewModel: ProductViewModel) {
         .size(120.dp)
         .padding(10.dp)
 
-    Card(
-        backgroundColor = Color.White, modifier = Modifier.fillMaxWidth(),
-        elevation = 10.dp, shape = RoundedCornerShape(10.dp)) {
 
-        if (productViewModel.errorMessage.isEmpty()) {
-            LazyColumn(modifier = Modifier.fillMaxHeight()){
-                items(productViewModel.prodList) { list ->
+    if (productViewModel.prodList.isNotEmpty()) {
+        LazyColumn(modifier = Modifier.fillMaxHeight()) {
+            items(productViewModel.prodList) { list ->
+                Card(
+                    backgroundColor = CardBackground,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(10.dp).clickable { onProductItemClick.invoke(list.title?:"") },
+                    elevation = 5.dp,
+                    shape = RoundedCornerShape(10.dp),
+                    ) {
                     Column {
                         Row {
                             Image(
-                                painter = rememberGlidePainter(request = list.products[0].thumbnail),
+                                painter = rememberGlidePainter(request = list.thumbnail),
                                 contentDescription = "Product Image",
                                 contentScale = ContentScale.Crop, modifier = Modifier
                                     .size(120.dp)
                                     .padding(10.dp)
                             )
+                            Column {
+                                Row(
+                                    modifier = Modifier.padding(
+                                        top = 10.dp,
+                                        start = 3.dp,
+                                        end = 3.dp
+                                    )
+                                ) {
+                                    list.title?.let {
+                                        Text(
+                                            text = it,
+                                            modifier = Modifier.weight(1f),
+                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 15.sp
+                                        )
+                                    }
+                                    list.price?.let {
+                                        Text(
+                                            text = stringResource(id = R.string.product_price) + it,
+                                            color = Purple91,
+                                            fontWeight = FontWeight.Medium,
+                                            fontSize = 15.sp,
+                                            modifier = Modifier.weight(0.4f)
+                                        )
+                                    }
+
+                                }
+                                list.description?.let {
+                                    Text(
+                                        text = it,
+                                        fontWeight = FontWeight.Normal,
+                                        fontSize = 15.sp,
+                                        overflow = TextOverflow.Ellipsis, maxLines = 2,
+                                        modifier = Modifier.padding(3.dp)
+                                    )
+                                }
+                                Row(modifier = Modifier.padding(top = 3.dp)) {
+                                    list.rating?.toFloat()
+                                        ?.let {
+                                            RatingBar(
+                                                rating = it,
+                                                spaceBetween = 2.dp
+                                            )
+                                        }
+                                }
+                            }
+
+
                         }
                     }
-
                 }
+
 
             }
 
-
-        } else {
-            Toast.makeText(
-                context,
-                "Unable to load data",
-                Toast.LENGTH_LONG
-            ).show()
         }
 
+
+    } else {
+        Toast.makeText(
+            context,
+            "Unable to load data",
+            Toast.LENGTH_SHORT
+        ).show()
     }
 
-}
-/*  Column{
-                                Row(modifier = Modifier.padding(top = 10.dp, start = 3.dp, end = 3.dp)) {
-                                    Text(
-                                        text = list.title,
-                                        modifier = Modifier.weight(1f),
-                                        fontWeight = FontWeight.Bold,
-                                        fontSize = 15.sp
-                                    )
-                                    Text(
-                                        text = stringResource(id = R.string.product_price) + " 175567",
-                                        color = Purple91,
-                                        fontWeight = FontWeight.Medium,
-                                        fontSize = 15.sp, modifier = Modifier.weight(0.4f)
-                                    )
 
-                                }
-                                Text(
-                                    text = "SSIM-Free, Model A19211 6.5-inch Super Retina HD display with OLED technology A12 Bionic chip with",
-                                    fontWeight = FontWeight.Normal,
-                                    fontSize = 15.sp,
-                                    overflow = TextOverflow.Ellipsis, maxLines = 2,
-                                    modifier = Modifier.padding(3.dp)
-                                )
-                                Row() {
-                                    RatingBar(rating = 3.7f, spaceBetween = 2.dp)
-                                }
-                            }*/
+}
 
 @Composable
 fun RatingBar(
@@ -143,8 +165,8 @@ fun RatingBar(
     spaceBetween: Dp = 0.dp
 ) {
 
-    val image = ImageBitmap.imageResource(id = R.drawable.star_half)
-    val imageFull = ImageBitmap.imageResource(id = R.drawable.star_full)
+    val image = ImageBitmap.imageResource(id = R.drawable.star_half_24)
+    val imageFull = ImageBitmap.imageResource(id = R.drawable.star_full_24)
 
     val totalCount = 5
 

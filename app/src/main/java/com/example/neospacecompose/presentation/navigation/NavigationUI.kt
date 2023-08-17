@@ -86,9 +86,9 @@ fun Drawer(scope: CoroutineScope, scaffoldState: ScaffoldState, navController: N
         DrawerHeader()
         items.forEach { items ->
             DrawerItemList(
-                items = items, selected = currentRoute == items.id,
+                items = items, selected = currentRoute == items.route,
                 onItemClick = {
-                    navController.navigate(items.id) {
+                    navController.navigate(items.route) {
                         navController.graph.startDestinationRoute?.let { route ->
                             popUpTo(route) {
                                 saveState = true
@@ -129,7 +129,7 @@ fun DrawerItemList(
         modifier = drawerModifier
     ) {
 
-        Image(imageVector = items.icons, contentDescription = items.title)
+        items.icons?.let { Image(imageVector = it, contentDescription = items.title) }
         Spacer(modifier = Modifier.width(7.dp))
         Text(
             text = items.title,

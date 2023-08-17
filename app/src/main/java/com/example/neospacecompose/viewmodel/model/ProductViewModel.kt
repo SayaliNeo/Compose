@@ -15,19 +15,17 @@ import kotlinx.coroutines.launch
 import retrofit2.Call
 
 class ProductViewModel : ViewModel() {
-    private val productList = ArrayList<ProductData>()
+ //   private val productList = ArrayList<ProductData>()
+ val prodList= mutableStateListOf<Products>()
     var errorMessage: String by mutableStateOf("")
-
-    val prodList: ArrayList<ProductData>
-        get() = productList
 
     fun allProductList() {
         viewModelScope.launch {
             val apiService = APIService.getInstance()
 
             try {
-                productList.clear()
-                productList.add(apiService.getProductList())
+                prodList.clear()
+                prodList.addAll(apiService.getProductList().products)
 
             } catch (e: Exception) {
                 errorMessage = e.message.toString()
