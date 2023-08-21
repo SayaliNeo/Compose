@@ -1,6 +1,5 @@
 package com.example.neospacecompose.presentation
 
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -18,7 +17,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.ImageBitmap
@@ -33,8 +31,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.example.neospacecompose.R
+import com.example.neospacecompose.model.Products
 import com.example.neospacecompose.repository.drawRating
 import com.example.neospacecompose.ui.theme.CardBackground
 import com.example.neospacecompose.ui.theme.Purple91
@@ -43,31 +41,24 @@ import com.example.neospacecompose.viewmodel.model.ProductViewModel
 import com.google.accompanist.glide.rememberGlidePainter
 
 @Composable
-fun ProductDetailsScreen(navController: NavHostController) {
-    val productViewModel = ProductViewModel()
-    LaunchedEffect("key1", block = {
-        productViewModel.allProductList()
-    })
+fun ProductDetailsScreen(productViewModel: ProductViewModel, navController: NavHostController) {
+    // LaunchedEffect(Unit, block = {
+    productViewModel.allProductList()
+    //})
 
-    CardLayout(productViewModel=productViewModel){title->
-        navController.navigate(DrawerScreenItems.DetailsViewScreen.route)
-    }
+    CardLayout(productViewModel = productViewModel, navController){ i: Int, productsList: List<Products> -> }
+
+
+//    CardLayout(productViewModel=productViewModel){title->
+//        navController.navigate(DrawerScreenItems.DetailsViewScreen.route)
+//    }
 }
 
 
 @Composable
-fun CardLayout(productViewModel: ProductViewModel,onProductItemClick : (String)->Unit) {
+fun CardLayout(productViewModel: ProductViewModel, navController: NavHostController,onProductItemClick : (Int,List<Products>) -> Unit) {
 
-    //val navController = rememberNavController()
     val context = LocalContext.current
-    val paddingModifier = Modifier
-        .padding(5.dp)
-        .fillMaxWidth()
-
-    val imageModifier = Modifier
-        .size(120.dp)
-        .padding(10.dp)
-
 
     if (productViewModel.prodList.isNotEmpty()) {
         LazyColumn(modifier = Modifier.fillMaxHeight()) {
@@ -76,10 +67,27 @@ fun CardLayout(productViewModel: ProductViewModel,onProductItemClick : (String)-
                     backgroundColor = CardBackground,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(10.dp).clickable { onProductItemClick.invoke(list.title?:"") },
+                        .padding(10.dp)
+                        .clickable {
+                            list.id?.let { onProductItemClick.invoke(it,
+                                listOf(productViewModel.prodList[it])
+                            )}
+                           // navController.navigate(Screen.MyDetailScreen.route+"/${mylist.something}"
+                            //navController.navigate(DrawerScreenItems.ProductDetailsViewScreen.route+"/${list.title}")
+                            //navController.navigate(DrawerScreenItems.ProductDetailsViewScreen.route+"/${navController.currentBackStackEntry?.arguments?.putSerializable("products",list)}")
+                            navController.currentBackStackEntry
+                                ?.arguments?.putSerializable("products", list)
+                            navController.navigate(DrawerScreenItems.ProductDetailsViewScreen.route)
+                        },
+
+                                             /*{
+                            navController.navigate(DrawerScreenItems.ProductDetailsViewScreen.route){
+
+                            }*/
+                    /* .clickable { navController.navigate(DrawerScreenItems.ProductDetailsViewScreen.route)},*/
                     elevation = 5.dp,
                     shape = RoundedCornerShape(10.dp),
-                    ) {
+                ) {
                     Column {
                         Row {
                             Image(
@@ -148,11 +156,11 @@ fun CardLayout(productViewModel: ProductViewModel,onProductItemClick : (String)-
 
 
     } else {
-        Toast.makeText(
-            context,
-            "Unable to load data",
-            Toast.LENGTH_SHORT
-        ).show()
+        /* Toast.makeText(
+             context,
+             "Unable to load data",
+             Toast.LENGTH_SHORT
+         ).show()*/
     }
 
 

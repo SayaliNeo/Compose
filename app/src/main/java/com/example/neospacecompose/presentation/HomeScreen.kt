@@ -3,10 +3,10 @@
 package com.example.neospacecompose.presentation
 
 import android.annotation.SuppressLint
-import android.widget.Toast
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.neospacecompose.viewmodel.model.UserViewModel
 
@@ -14,9 +14,8 @@ import com.example.neospacecompose.viewmodel.model.UserViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun HomeScreen() {
+fun HomeScreen(navController: NavHostController) {
     val ctx = LocalContext.current
-    Toast.makeText(ctx,"Home", Toast.LENGTH_SHORT).show()
 
     /* LaunchedEffect(Unit, block = {
         userViewModel.userDetailsList()
@@ -78,5 +77,5 @@ fun HomeScreen() {
 fun previewMainContent() {
     val navController = rememberNavController()
     var userViewModel = UserViewModel()
-    HomeScreen()
+    HomeScreen(navController)
 }
