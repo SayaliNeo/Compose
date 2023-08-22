@@ -20,7 +20,7 @@ object Products: DrawerScreenItems("Products","Products", Icons.Rounded.Shopping
 object MyAccount: DrawerScreenItems("Account","My Account", Icons.Filled.Person)
 object Logout: DrawerScreenItems("Logout","Logout", Icons.Filled.ArrowBack)
 //object ProductDetailsViewScreen: DrawerScreenItems("ProductViewById/{title}","ViewProduct")
-object ProductDetailsViewScreen: DrawerScreenItems("ProductView","ViewProduct")
+object ProductDetailsViewScreen: DrawerScreenItems("ProductViewById","ViewProduct")
 }
 
 /*

@@ -72,12 +72,11 @@ fun CardLayout(productViewModel: ProductViewModel, navController: NavHostControl
                             list.id?.let { onProductItemClick.invoke(it,
                                 listOf(productViewModel.prodList[it])
                             )}
-                           // navController.navigate(Screen.MyDetailScreen.route+"/${mylist.something}"
-                            //navController.navigate(DrawerScreenItems.ProductDetailsViewScreen.route+"/${list.title}")
+                            navController.navigate(DrawerScreenItems.ProductDetailsViewScreen.route+"/${list.id}")
+
                             //navController.navigate(DrawerScreenItems.ProductDetailsViewScreen.route+"/${navController.currentBackStackEntry?.arguments?.putSerializable("products",list)}")
-                            navController.currentBackStackEntry
-                                ?.arguments?.putSerializable("products", list)
-                            navController.navigate(DrawerScreenItems.ProductDetailsViewScreen.route)
+                            //navController.currentBackStackEntry?.arguments?.putParcelable("product", list)
+                            //navController.navigate(DrawerScreenItems.ProductDetailsViewScreen.route+"${list.id}")
                         },
 
                                              /*{
