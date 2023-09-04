@@ -26,6 +26,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -44,11 +45,17 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @Composable
-fun TopBar(scope: CoroutineScope, scaffoldState: ScaffoldState) {
+fun TopBar(
+    scope: CoroutineScope,
+    scaffoldState: ScaffoldState,
+    title: String,
+    imageVector: ImageVector? = null
+) {
     TopAppBar(
         title = {
-            Text(text = stringResource(id = R.string.neostore), fontSize = 16.sp)
-        }, navigationIcon = {
+            Text(text = title, fontSize = 16.sp)
+        },
+        navigationIcon = {
             IconButton(onClick = {
                 scope.launch { scaffoldState.drawerState.open() }
             }) {
@@ -57,7 +64,8 @@ fun TopBar(scope: CoroutineScope, scaffoldState: ScaffoldState) {
             }
         },
         backgroundColor = Purple71,
-        contentColor = Color.White
+        contentColor = Color.White,
+        actions = { imageVector?.let { Icon(imageVector = it, contentDescription = "Icon") } }
     )
 
 }
@@ -76,8 +84,8 @@ fun DisplayPreview() {
 @Composable
 fun Drawer(scope: CoroutineScope, scaffoldState: ScaffoldState, navController: NavController) {
     val items = listOf(
-        DrawerScreenItems.Home,DrawerScreenItems.Products,
-        DrawerScreenItems.MyAccount, DrawerScreenItems.Logout
+        DrawerScreenItems.Home, DrawerScreenItems.Products,
+        DrawerScreenItems.MyAccount, DrawerScreenItems.Logout, DrawerScreenItems.Notes
     )
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
@@ -107,7 +115,6 @@ fun Drawer(scope: CoroutineScope, scaffoldState: ScaffoldState, navController: N
             )
         }
     }
-
 
 
 }

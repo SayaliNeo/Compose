@@ -16,6 +16,7 @@ sealed class DrawerScreenItems(
     val icons: ImageVector?=null
 ){
 object Home: DrawerScreenItems("Home","Home", Icons.Filled.Home)
+object Notes: DrawerScreenItems("Notes","Notes", Icons.Filled.Home)
 object Products: DrawerScreenItems("Products","Products", Icons.Rounded.ShoppingCart)
 object MyAccount: DrawerScreenItems("Account","My Account", Icons.Filled.Person)
 object Logout: DrawerScreenItems("Logout","Logout", Icons.Filled.ArrowBack)

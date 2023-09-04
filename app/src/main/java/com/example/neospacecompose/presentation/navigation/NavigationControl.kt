@@ -1,30 +1,37 @@
 package com.example.neospacecompose.presentation.navigation
 
+import android.content.Context
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.neospacecompose.presentation.HomeScreen
+import com.example.neospacecompose.presentation.NotesApp
 import com.example.neospacecompose.presentation.ProductDetailsScreen
 import com.example.neospacecompose.presentation.ProductViewDetailsScreen
 import com.example.neospacecompose.viewmodel.model.DrawerScreenItems
+import com.example.neospacecompose.viewmodel.model.NoteViewModel
 import com.example.neospacecompose.viewmodel.model.ProductViewModel
 
 @Composable
 fun NavigationControl(navController: NavHostController) {
     NavHost(
         navController = navController,
-        startDestination = DrawerScreenItems.Products.route
+        startDestination = DrawerScreenItems.Notes.route
     ) {
         //NavGrapghs
-        composable(DrawerScreenItems.Home.route) {
-            HomeScreen(navController)
+        composable(DrawerScreenItems.Notes.route) {
+            NotesApp(navController)
+
         }
         //   https://dummyjson.com/products
         composable(DrawerScreenItems.Products.route) {
-            ProductDetailsScreen(ProductViewModel(), navController)
+            ProductDetailsScreen(navController)
         }
         /* composable(
              DrawerScreenItems.ProductDetailsViewScreen.route + "/{product}", arguments = listOf(
@@ -41,8 +48,9 @@ fun NavigationControl(navController: NavHostController) {
          }*/
 //https://dummyjson.com/products/id=2
         composable(
-            DrawerScreenItems.ProductDetailsViewScreen.route+"/{id}", arguments = listOf(navArgument("id"){type = NavType.IntType})
-        ) {backStackEntry ->
+            DrawerScreenItems.ProductDetailsViewScreen.route + "/{id}",
+            arguments = listOf(navArgument("id") { type = NavType.IntType })
+        ) { backStackEntry ->
             ProductViewDetailsScreen(
                 navController = navController,
                 backStackEntry.arguments?.getInt("id")
@@ -50,5 +58,7 @@ fun NavigationControl(navController: NavHostController) {
         }
     }
 }
+
+
 
 

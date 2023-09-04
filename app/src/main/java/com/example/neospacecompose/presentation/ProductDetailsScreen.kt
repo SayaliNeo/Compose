@@ -1,5 +1,7 @@
 package com.example.neospacecompose.presentation
 
+import android.annotation.SuppressLint
+import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -17,6 +19,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.ImageBitmap
@@ -30,6 +33,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.neospacecompose.R
 import com.example.neospacecompose.model.Products
@@ -37,16 +42,23 @@ import com.example.neospacecompose.repository.drawRating
 import com.example.neospacecompose.ui.theme.CardBackground
 import com.example.neospacecompose.ui.theme.Purple91
 import com.example.neospacecompose.viewmodel.model.DrawerScreenItems
+import com.example.neospacecompose.viewmodel.model.NoteViewModel
 import com.example.neospacecompose.viewmodel.model.ProductViewModel
 import com.google.accompanist.glide.rememberGlidePainter
 
 @Composable
-fun ProductDetailsScreen(productViewModel: ProductViewModel, navController: NavHostController) {
-    // LaunchedEffect(Unit, block = {
-    productViewModel.allProductList()
+fun ProductDetailsScreen(
+    navController: NavHostController,
+    productViewModel: ProductViewModel = hiltViewModel()
+) {
+    //LaunchedEffect(key1 = Unit, block = {
+        productViewModel.allProductList()
     //})
 
-    CardLayout(productViewModel = productViewModel, navController){ i: Int, productsList: List<Products> -> }
+    CardLayout(
+        productViewModel = productViewModel,
+        navController
+    ) { i: Int, productsList: List<Products> -> }
 
 
 //    CardLayout(productViewModel=productViewModel){title->
@@ -55,34 +67,42 @@ fun ProductDetailsScreen(productViewModel: ProductViewModel, navController: NavH
 }
 
 
+@SuppressLint("StateFlowValueCalledInComposition")
 @Composable
-fun CardLayout(productViewModel: ProductViewModel, navController: NavHostController,onProductItemClick : (Int,List<Products>) -> Unit) {
+fun CardLayout(
+    productViewModel: ProductViewModel,
+    navController: NavHostController,
+    onProductItemClick: (Int, List<Products>) -> Unit
+) {
 
     val context = LocalContext.current
 
-    if (productViewModel.prodList.isNotEmpty()) {
+    if (productViewModel.prodList.value.isNotEmpty()) {
         LazyColumn(modifier = Modifier.fillMaxHeight()) {
-            items(productViewModel.prodList) { list ->
+            items(productViewModel.prodList.value) { list ->
                 Card(
                     backgroundColor = CardBackground,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(10.dp)
                         .clickable {
-                            list.id?.let { onProductItemClick.invoke(it,
-                                listOf(productViewModel.prodList[it])
-                            )}
-                            navController.navigate(DrawerScreenItems.ProductDetailsViewScreen.route+"/${list.id}")
+                            list.id?.let {
+                                onProductItemClick.invoke(
+                                    it,
+                                    listOf(productViewModel.prodList.value[it])
+                                )
+                            }
+                            navController.navigate(DrawerScreenItems.ProductDetailsViewScreen.route + "/${list.id}")
 
                             //navController.navigate(DrawerScreenItems.ProductDetailsViewScreen.route+"/${navController.currentBackStackEntry?.arguments?.putSerializable("products",list)}")
                             //navController.currentBackStackEntry?.arguments?.putParcelable("product", list)
                             //navController.navigate(DrawerScreenItems.ProductDetailsViewScreen.route+"${list.id}")
                         },
 
-                                             /*{
-                            navController.navigate(DrawerScreenItems.ProductDetailsViewScreen.route){
+                    /*{
+   navController.navigate(DrawerScreenItems.ProductDetailsViewScreen.route){
 
-                            }*/
+   }*/
                     /* .clickable { navController.navigate(DrawerScreenItems.ProductDetailsViewScreen.route)},*/
                     elevation = 5.dp,
                     shape = RoundedCornerShape(10.dp),

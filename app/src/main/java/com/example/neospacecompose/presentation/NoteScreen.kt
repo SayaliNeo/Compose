@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
-
 package com.example.neospacecompose.presentation
 
 import android.annotation.SuppressLint
@@ -18,6 +16,7 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -27,6 +26,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.neospacecompose.components.NoteButton
@@ -34,12 +35,22 @@ import com.example.neospacecompose.components.NoteInputText
 import com.example.neospacecompose.model.Note
 import com.example.neospacecompose.ui.theme.CardBackground
 import com.example.neospacecompose.ui.theme.Purple71
+import com.example.neospacecompose.viewmodel.model.NoteViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
 
-
-@OptIn(ExperimentalMaterial3Api::class)
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun HomeScreen(
+fun NotesApp(navController: NavHostController, noteViewModel : NoteViewModel = hiltViewModel()) {
+    val notesList = noteViewModel.notelist.collectAsState().value
+    NoteScreen(
+        navController,
+        notes = notesList,
+        onAddNote = { noteViewModel.addNote(it) },
+        onRemoveNote = { noteViewModel.removeNotes(it) }
+    )
+}
+
+@Composable
+fun NoteScreen(
     navController: NavHostController, notes: List<Note>,
     onAddNote: (Note) -> Unit, onRemoveNote: (Note) -> Unit
 ) {
@@ -105,17 +116,21 @@ fun HomeScreen(
         }
         Divider(modifier = Modifier.padding(10.dp))
 
-     /*   LazyColumn {
-            items(notes) { noteList ->
-                NoteColumn(note = noteList, onNoteClick = {
-                    onRemoveNote(it)
-                })
+        /*   LazyColumn {
+               items(notes) { noteList ->
+                   NoteColumn(note = noteList, onNoteClick = {
+                       onRemoveNote(it)
+                   })
 
+               }
+           }*/
+
+        LazyColumn {
+            items(items = notes) { list ->
+                NoteColumn(
+                    note = list,
+                    onNoteClick = { onRemoveNote(it) })
             }
-        }*/
-
-        LazyColumn{
-            items(items = notes) { list -> NoteColumn(note = list , onNoteClick = {onRemoveNote(it)}) }
         }
 
     }
@@ -124,7 +139,6 @@ fun HomeScreen(
 }
 
 
-/*
 @Composable
 fun NoteColumn(modifier: Modifier = Modifier, note: Note, onNoteClick: (Note) -> Unit) {
     Column {
@@ -153,9 +167,7 @@ fun NoteColumn(modifier: Modifier = Modifier, note: Note, onNoteClick: (Note) ->
 @Preview(showBackground = true)
 @Composable
 fun previewMainContent() {
-    HomeScreen(
-        navController = rememberNavController(),
-        notes = emptyList(),
-        onAddNote = {}
-    ) {}
-}*/
+    NotesApp(
+        navController = rememberNavController()
+    )
+}

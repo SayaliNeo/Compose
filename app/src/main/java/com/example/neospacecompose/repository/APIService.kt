@@ -3,10 +3,12 @@ package com.example.neospacecompose.repository
 import com.example.neospacecompose.model.ProductData
 import com.example.neospacecompose.model.Products
 import com.example.neospacecompose.model.UserDetails
+import kotlinx.coroutines.flow.MutableStateFlow
 import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
+import java.util.concurrent.Flow
 
 
 const val Base_URL = "https://dummyjson.com/"
@@ -17,7 +19,7 @@ interface APIService {
     suspend fun getLisDetails():List<UserDetails>
 
     @GET("products")
-    suspend fun getProductList(): ProductData
+    suspend fun getProductList(): Products
 
 
 
