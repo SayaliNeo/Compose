@@ -70,7 +70,7 @@ fun TopBar(
 
 }
 
-@Composable
+/*@Composable
 @Preview
 fun DisplayPreview() {
     //TopBar(scope = rememberCoroutineScope(), scaffoldState = rememberScaffoldState())
@@ -78,11 +78,11 @@ fun DisplayPreview() {
         scope = rememberCoroutineScope(),
         scaffoldState = rememberScaffoldState(), navController = rememberNavController()
     )
-}
+}*/
 
 
 @Composable
-fun Drawer(scope: CoroutineScope, scaffoldState: ScaffoldState, navController: NavController) {
+fun Drawer(scope: CoroutineScope, scaffoldState: ScaffoldState, navController: NavController, title: (String) -> Unit) {
     val items = listOf(
         DrawerScreenItems.Home, DrawerScreenItems.Products,
         DrawerScreenItems.MyAccount, DrawerScreenItems.Logout, DrawerScreenItems.Notes
@@ -97,6 +97,7 @@ fun Drawer(scope: CoroutineScope, scaffoldState: ScaffoldState, navController: N
                 items = items, selected = currentRoute == items.route,
                 onItemClick = {
                     navController.navigate(items.route) {
+                        title.invoke(items.title)
                         navController.graph.startDestinationRoute?.let { route ->
                             popUpTo(route) {
                                 saveState = true

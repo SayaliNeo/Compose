@@ -1,30 +1,34 @@
 package com.example.neospacecompose.presentation
 
-import android.annotation.SuppressLint
-import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Card
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.stringResource
@@ -34,155 +38,212 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.neospacecompose.R
+import com.example.neospacecompose.components.ButtonContainer
+import com.example.neospacecompose.components.DraggableThumbButton
 import com.example.neospacecompose.model.Products
 import com.example.neospacecompose.repository.drawRating
 import com.example.neospacecompose.ui.theme.CardBackground
 import com.example.neospacecompose.ui.theme.Purple91
 import com.example.neospacecompose.viewmodel.model.DrawerScreenItems
-import com.example.neospacecompose.viewmodel.model.NoteViewModel
 import com.example.neospacecompose.viewmodel.model.ProductViewModel
 import com.google.accompanist.glide.rememberGlidePainter
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun ProductDetailsScreen(
     navController: NavHostController,
-    productViewModel: ProductViewModel = hiltViewModel()
-) {
-    //LaunchedEffect(key1 = Unit, block = {
-        productViewModel.allProductList()
-    //})
-
-    CardLayout(
-        productViewModel = productViewModel,
-        navController
-    ) { i: Int, productsList: List<Products> -> }
-
-
-//    CardLayout(productViewModel=productViewModel){title->
-//        navController.navigate(DrawerScreenItems.DetailsViewScreen.route)
-//    }
-}
-
-
-@SuppressLint("StateFlowValueCalledInComposition")
-@Composable
-fun CardLayout(
-    productViewModel: ProductViewModel,
-    navController: NavHostController,
+    productViewModel: ProductViewModel = hiltViewModel(),
     onProductItemClick: (Int, List<Products>) -> Unit
 ) {
+    val prodData by productViewModel.prodList.collectAsState(initial = emptyList())
 
-    val context = LocalContext.current
 
-    if (productViewModel.prodList.value.isNotEmpty()) {
-        LazyColumn(modifier = Modifier.fillMaxHeight()) {
-            items(productViewModel.prodList.value) { list ->
-                Card(
-                    backgroundColor = CardBackground,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(10.dp)
-                        .clickable {
-                            list.id?.let {
-                                onProductItemClick.invoke(
-                                    it,
-                                    listOf(productViewModel.prodList.value[it])
+
+    Column(
+        modifier = Modifier
+            .verticalScroll(rememberScrollState())
+            .fillMaxWidth()
+    ) {
+        prodData.forEachIndexed { index, products ->
+
+            Card(
+                backgroundColor = CardBackground,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 10.dp, end = 10.dp, top = 5.dp, bottom = 5.dp).clickable {
+                        products.id?.let {
+                        onProductItemClick.invoke(
+                            it,
+                            listOf(productViewModel.prodList.value[it])
+                        )
+                    }
+                        navController.navigate(DrawerScreenItems.ProductDetailsViewScreen.route + "/${products.id}") },
+                elevation = 5.dp,
+                shape = RoundedCornerShape(10.dp),
+            ) {
+                Row {
+                    Image(
+                        painter = rememberGlidePainter(request = products.thumbnail),
+                        contentDescription = "Product Image",
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .size(120.dp)
+                            .padding(10.dp)
+                            .clip(shape = RoundedCornerShape(50.dp)),
+                    )
+                    Column {
+                        Row(
+                            modifier = Modifier.padding(
+                                top = 10.dp,
+                                start = 3.dp,
+                                end = 3.dp
+                            )
+                        ) {
+                            products.title?.let {
+                                Text(
+                                    text = it,
+                                    modifier = Modifier.weight(1f),
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 15.sp
                                 )
                             }
-                            navController.navigate(DrawerScreenItems.ProductDetailsViewScreen.route + "/${list.id}")
-
-                            //navController.navigate(DrawerScreenItems.ProductDetailsViewScreen.route+"/${navController.currentBackStackEntry?.arguments?.putSerializable("products",list)}")
-                            //navController.currentBackStackEntry?.arguments?.putParcelable("product", list)
-                            //navController.navigate(DrawerScreenItems.ProductDetailsViewScreen.route+"${list.id}")
-                        },
-
-                    /*{
-   navController.navigate(DrawerScreenItems.ProductDetailsViewScreen.route){
-
-   }*/
-                    /* .clickable { navController.navigate(DrawerScreenItems.ProductDetailsViewScreen.route)},*/
-                    elevation = 5.dp,
-                    shape = RoundedCornerShape(10.dp),
-                ) {
-                    Column {
-                        Row {
-                            Image(
-                                painter = rememberGlidePainter(request = list.thumbnail),
-                                contentDescription = "Product Image",
-                                contentScale = ContentScale.Crop, modifier = Modifier
-                                    .size(120.dp)
-                                    .padding(10.dp)
-                            )
-                            Column {
-                                Row(
-                                    modifier = Modifier.padding(
-                                        top = 10.dp,
-                                        start = 3.dp,
-                                        end = 3.dp
-                                    )
-                                ) {
-                                    list.title?.let {
-                                        Text(
-                                            text = it,
-                                            modifier = Modifier.weight(1f),
-                                            fontWeight = FontWeight.Bold,
-                                            fontSize = 15.sp
-                                        )
-                                    }
-                                    list.price?.let {
-                                        Text(
-                                            text = stringResource(id = R.string.product_price) + it,
-                                            color = Purple91,
-                                            fontWeight = FontWeight.Medium,
-                                            fontSize = 15.sp,
-                                            modifier = Modifier.weight(0.4f)
-                                        )
-                                    }
-
-                                }
-                                list.description?.let {
-                                    Text(
-                                        text = it,
-                                        fontWeight = FontWeight.Normal,
-                                        fontSize = 15.sp,
-                                        overflow = TextOverflow.Ellipsis, maxLines = 2,
-                                        modifier = Modifier.padding(3.dp)
-                                    )
-                                }
-                                Row(modifier = Modifier.padding(top = 3.dp)) {
-                                    list.rating?.toFloat()
-                                        ?.let {
-                                            RatingBar(
-                                                rating = it,
-                                                spaceBetween = 2.dp
-                                            )
-                                        }
-                                }
+                            products.price?.let {
+                                Text(
+                                    text = stringResource(id = R.string.product_price) + it,
+                                    color = Purple91,
+                                    fontWeight = FontWeight.Medium,
+                                    fontSize = 15.sp,
+                                    modifier = Modifier.weight(0.4f)
+                                )
                             }
 
-
+                        }
+                        products.description?.let {
+                            Text(
+                                text = it,
+                                fontWeight = FontWeight.Normal,
+                                fontSize = 15.sp,
+                                overflow = TextOverflow.Ellipsis, maxLines = 2,
+                                modifier = Modifier.padding(3.dp)
+                            )
+                        }
+                        Row(modifier = Modifier.padding(top = 3.dp)) {
+                            products.rating?.toFloat()
+                                ?.let {
+                                    RatingBar(
+                                        rating = it,
+                                        spaceBetween = 2.dp
+                                    )
+                                }
+                        }
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = 3.dp, end = 10.dp),
+                                //.background(color = Color.White),
+                            horizontalArrangement = Arrangement.End
+                        ) {
+                           Counter()
                         }
                     }
+
+
                 }
-
-
             }
-
         }
 
 
-    } else {
-        /* Toast.makeText(
-             context,
-             "Unable to load data",
-             Toast.LENGTH_SHORT
-         ).show()*/
     }
+}
+
+@Composable
+fun Counter() {
+    var count by remember {
+        mutableStateOf(0)
+    }
+    //val count = +state{0}
+        Row (horizontalArrangement = Arrangement.End){
+            Text(text = "-", modifier = Modifier
+                .padding(8.dp)
+                .clickable { count-- }, color = Purple91
+            )
+            Text(text = "${count}", modifier = Modifier
+                .padding(8.dp)//.clip(CircleShape)
+                 , color = Purple91
+            )
+            Text(text = "+", modifier = Modifier
+                .padding(8.dp)
+                .clickable { count++ }, color = Purple91
+            )
+            //Button(text = "+", onClick = { count++ })
+        }
+}
 
 
+@Composable
+private fun CounterButton(
+    value: String,
+    onValueDecreaseClick: () -> Unit,
+    onValueIncreaseClick: () -> Unit,
+    onValueClearClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = modifier
+            .width(50.dp)
+            .height(40.dp)
+    ) {
+
+        ButtonContainer(
+            onValueDecreaseClick = { onValueDecreaseClick },
+            onValueIncreaseClick = { onValueIncreaseClick },
+            onValueClearClick = { onValueClearClick },
+            modifier = Modifier
+        )
+
+        DraggableThumbButton(
+            value = value,
+            onClick = { onValueIncreaseClick },
+            modifier = Modifier.align(Alignment.Center)
+        )
+    }
+}
+
+@Composable
+fun NonlazyGrid(
+    columns: Int,
+    itemCount: Int,
+    modifier: Modifier = Modifier,
+    content: @Composable() (Int) -> Unit
+) {
+    Column(modifier = modifier) {
+        var rows = (itemCount / columns)
+        if (itemCount.mod(columns) > 0) {
+            rows += 1
+        }
+
+        for (rowId in 0 until rows) {
+            val firstIndex = rowId * columns
+
+            Row {
+                for (columnId in 0 until columns) {
+                    val index = firstIndex + columnId
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f)
+                    ) {
+                        if (index < itemCount) {
+                            content(index)
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
 @Composable
@@ -209,7 +270,8 @@ fun RatingBar(
             .height(height)
             .drawBehind {
                 drawRating(rating, image, imageFull, space)
-            })
+            }
+    )
 }
 
 

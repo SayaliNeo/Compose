@@ -7,9 +7,11 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.example.neospacecompose.model.Note
+import com.example.neospacecompose.model.ProductData
 import com.example.neospacecompose.model.Products
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
 @Dao
 interface ProductDao {
@@ -20,7 +22,7 @@ interface ProductDao {
    suspend fun insertProduct(products: MutableStateFlow<List<Products>>)*/
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertProduct(products: Products) /*:MutableStateFlow<List<Products>>*/
+     fun insertProduct(products: List<Products>)
 
     @Query("DELETE FROM products WHERE id = :id")
     fun deleteProduct(id: Int)

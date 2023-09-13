@@ -1,37 +1,36 @@
 package com.example.neospacecompose.presentation.navigation
 
-import android.content.Context
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.example.neospacecompose.model.Products
 import com.example.neospacecompose.presentation.HomeScreen
 import com.example.neospacecompose.presentation.NotesApp
 import com.example.neospacecompose.presentation.ProductDetailsScreen
 import com.example.neospacecompose.presentation.ProductViewDetailsScreen
 import com.example.neospacecompose.viewmodel.model.DrawerScreenItems
-import com.example.neospacecompose.viewmodel.model.NoteViewModel
 import com.example.neospacecompose.viewmodel.model.ProductViewModel
 
 @Composable
 fun NavigationControl(navController: NavHostController) {
     NavHost(
         navController = navController,
-        startDestination = DrawerScreenItems.Notes.route
+        startDestination = DrawerScreenItems.Home.route
     ) {
         //NavGrapghs
         composable(DrawerScreenItems.Notes.route) {
             NotesApp(navController)
 
         }
+        composable(DrawerScreenItems.Home.route){
+            HomeScreen(navController = navController)
+        }
         //   https://dummyjson.com/products
         composable(DrawerScreenItems.Products.route) {
-            ProductDetailsScreen(navController)
+            ProductDetailsScreen(navController){i: Int, productsList: List<Products> ->}
         }
         /* composable(
              DrawerScreenItems.ProductDetailsViewScreen.route + "/{product}", arguments = listOf(

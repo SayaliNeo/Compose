@@ -1,7 +1,6 @@
 package com.example.neospacecompose.repository
 
 import androidx.lifecycle.MutableLiveData
-import com.example.neospacecompose.model.Note
 import com.example.neospacecompose.model.ProductData
 import com.example.neospacecompose.model.Products
 import com.example.neospacecompose.repository.daoRepo.ProductDao
@@ -18,15 +17,12 @@ class ProductRepository @Inject constructor(val productDao: ProductDao) {
     val searchResults = MutableLiveData<List<Products>>()
 
     val coroutineScope = CoroutineScope(Dispatchers.Main)
+    val apiService = APIService.getInstance()
 
 
-  /*  fun insertProduct(product: Products) {
-        coroutineScope.launch(Dispatchers.IO) {
-            productDao.insertProduct(product)
-        }
-    }*/
+    suspend fun getAllProductsFromApi(): ProductData = apiService.getProductList()
 
-    suspend fun insertProduct(productList: Products) = productDao.insertProduct(productList)
+    fun insertProduct(productList: List<Products>) = productDao.insertProduct(productList)
     fun getAllProducts(): Flow<List<Products>> = productDao.getAllProducts().flowOn(Dispatchers.IO).conflate()
 
     fun allProducts(){
